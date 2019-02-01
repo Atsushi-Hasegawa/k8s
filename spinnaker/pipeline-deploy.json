@@ -1,0 +1,43 @@
+{
+  "name": "Deploy",
+  "application": "test",
+  "appConfig": {},
+  "limitConcurrent": true,
+  "parameterConfig": [],
+  "stages": [
+    {
+      "name": "Wait",
+      "refId": "Wait",
+      "waitTime": 30,
+      "type": "wait"
+    },
+    {
+      "name": "notifiction build result",
+      "refId": "Webhook",
+      "url": "<webhook_url>",
+      "method": "POST",
+      "payload": {
+        "text": "test-spinnaker-deploy"
+      },
+      "requisiteStageRefIds": [
+        "Wait"
+      ],
+      "type": "webhook"
+    }
+  ],
+  "triggers": [
+    {
+      "account": "gcr",
+      "application": "test",
+      "organization": "test",
+      "registry": "gcr.io",
+      "repository": "test",
+      "enabled": true,
+      "status": [
+        "successful"
+      ],
+      "tag": "v.*",
+      "type": "docker"
+    }
+  ]
+}
