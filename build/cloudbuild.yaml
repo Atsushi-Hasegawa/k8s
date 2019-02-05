@@ -1,0 +1,10 @@
+steps:
+  - name: 'gcr.io/$PROJECT_ID/docker'
+    args:
+      - 'build'
+      - '--build-arg'
+      - '_ACCESS_TOKEN=$_ACCESS_TOKEN'
+      - '--file=build/Dockerfile'
+      - '--tag=gcr.io/$PROJECT_ID/sample:latest'
+      - '.'
+images: ['gcr.io/$PROJECT_ID/sample']
