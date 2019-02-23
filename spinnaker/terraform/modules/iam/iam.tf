@@ -4,7 +4,7 @@ resource "google_service_account" "iam-service-account" {
   display_name = "${lookup(var.serviceaccount[count.index], "account")}"
 }
 
-resource "google_project_iam_binding" "iam-policy" {
+resource "google_project_iam_binding" "iam-binding" {
   project = "${var.project}"
   role = "${lookup(var.serviceaccount[count.index], "role")}"
   members = [
