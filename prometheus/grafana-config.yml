@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: config-grafana
+  namespace: monitoring
+data:
+  GF_SMTP_ENABLED: '1'
+  GF_SMTP_HOST: 'smtp.gmail:587'
+  GF_SMTP_USER: ${GOOGLE_EMAIL_ADDRESS}
+  GF_SMTP_PASSWORD: ${GOOGLE_EMAIL_PASSWARD}
+  GF_SMTP_SKIP_VERIFY: '1'
+  GF_USERS_ALLOW_SIGN_UP: "false"

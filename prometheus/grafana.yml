@@ -24,8 +24,8 @@ spec:
           ports:
             - containerPort: 3000
           envFrom:
-            - secretRef:
-                name: secret-grafana
+            - configMapRef:
+                name: config-grafana
 ---
 apiVersion: v1
 kind: Service
