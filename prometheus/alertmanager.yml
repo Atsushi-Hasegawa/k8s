@@ -1,46 +1,35 @@
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: monitoring
-  labels:
-    name: monitoring
----
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
   namespace: monitoring
-  name: prometheus
+  name: alertmanager
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
-      app: prometheus
+      app: alertmanager
   template:
     metadata:
       labels:
-        app: prometheus
+        app: alertmanager
     spec:
       containers:
-        - name: prometheus
-          image: prom/prometheus:latest
+        - name: alertmanager
+          image: prom/alertmanager:latest
           imagePullPolicy: Always
           ports:
-            - containerPort: 9090
+            - containerPort: 9093
           args:
-            - '--config.file=/etc/prometheus/prometheus.yml'
+            - '--config.file=/etc/alertmanager/alertmanager.yml'
           volumeMounts:
             - name: config-volume
-              mountPath: /etc/prometheus/
-            - name: data-volume
-              mountPath: /etc/data/
+              mountPath: /etc/alertmanager/
             - name: secrets-volume
               mountPath: /var/run/secrets
       volumes:
         - name: config-volume
           configMap:
-            name: prometheus-config
-        - name: data-volume
-          emptyDir: {}
+            name: alertmanager-config
         - name: secrets-volume
           hostPath:
             path: /var/run/secrets
@@ -49,12 +38,11 @@ apiVersion: v1
 kind: Service
 metadata:
   namespace: monitoring
-  name: prometheus
+  name: alertmanager
 spec:
-  type: NodePort
+  type: ClusterIP
   ports:
-    - port: 9090
-      targetPort: 9090
+    - port: 9093
       protocol: TCP
   selector:
-    app: prometheus
+    app: alertmanager
