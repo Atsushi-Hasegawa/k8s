@@ -1,52 +1,3 @@
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: prometheus
-  namespace: monitoring
-automountServiceAccountToken: false
----
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: monitoring
-  labels:
-    name: monitoring
----
-apiVersion: v1
-kind: PersistentVolume
-metadata:
-  name: prometheus-pv
-  labels:
-    name: prometheus-pv
-spec:
-  capacity:
-    storage: "20Gi"
-  accessModes:
-    - ReadWriteMany
-  persistentVolumeReclaimPolicy: Recycle
-  storageClassName: slow
-  mountOptions:
-    - hard
-  nfs:
-    server: 192.168.99.1
-    path: /share
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: prometheus-pvc
-  labels:
-    name: prometheus-pvc
-spec:
-  selector:
-    matchLabels:
-      name: prometheus-pv
-  resources:
-    requests:
-      storage: "20Gi"
-  accessModes:
-    - ReadWriteMany
----
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
@@ -62,37 +13,22 @@ spec:
       labels:
         app: prometheus
     spec:
-      serviceAccountName: prometheus
       containers:
         - name: prometheus
           image: prom/prometheus:latest
           imagePullPolicy: Always
-          args:
-            - '--config.file=/mnt/prometheus/prometheus.yml'
           ports:
             - containerPort: 9090
-          volumeMounts:
-            - name: config-volume
-              mountPath: /mnt/prometheus/
-            - name: data-volume
-              mountPath: /mnt/data/
-            - name: secrets-volume
-              mountPath: /var/run/secrets
       volumes:
         - name: config-volume
           configMap:
-            name: prometheus-configmap
-        - name: data-volume
-          emptyDir: {}
-        - name: secrets-volume
-          hostPath:
-            path: /var/run/secrets
+            name: prometheus-config
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: prometheus
   namespace: monitoring
+  name: prometheus
 spec:
   type: NodePort
   ports:
