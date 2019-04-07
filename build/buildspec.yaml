@@ -1,0 +1,16 @@
+version: 0.2
+
+phases:
+  pre_build:
+    commands:
+      - echo Loggin in the Amazon ECR ...
+      - $(aws ecr get-login --no-include-email --region $AWS_DEFAULT_REGION)
+  build:
+    commands:
+      - echo Building the Docker image ...
+      - docker build -t $DOCKER_IMAGE_REPO:$TAG .
+      - docker tag $DOCKER_IMAGE_REPO:$TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION
+  post_build:
+    commands:
+      - echo Pushing the docker image ...
+      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$DOCKER_IMAGE_REPO:$TAG
