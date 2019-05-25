@@ -41,5 +41,7 @@ module "gcs" {
   project             = "${var.project}"
   gcs_location        = "${var.gcs_location}"
   service_account_key = "${module.iam.service_account_key}"
-  spinnaker_version = "${var.spinnaker_version}"
+  spinnaker_version   = "${var.spinnaker_version}"
+  deploy_account      = "${var.deploy_account}"
+  docker_registry     = "${var.docker_registry}"
 }

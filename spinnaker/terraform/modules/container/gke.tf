@@ -34,12 +34,13 @@ data "template_file" "gcloud_config" {
     && gcloud config set container/use_application_default_credentials true \
     && gcloud auth activate-service-account --key-file=$${file_path} --project=$${project} \
     && gcloud container clusters --zone=$${zone} --project=$${project} get-credentials $${cluster_name} \
-    && kubectl version
+    && kubectl version \
+    && kubectl create clusterrolebinding system-admin-binding --clusterrole=cluster-admin --user=system:anonymous
 EOF
 
   vars {
     zone         = "${lookup(var.container, "zone")}"
-    project = "${var.project}"
+    project      = "${var.project}"
     file_path    = "${path.module}/../../services/config/account.json"
     cluster_name = "${google_container_cluster.gke.id}"
   }

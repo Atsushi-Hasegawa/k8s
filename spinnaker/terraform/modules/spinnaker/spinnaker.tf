@@ -1,43 +1,49 @@
 # create spinnaker namespace
 resource "kubernetes_namespace" "spinnaker_namespace" {
   metadata {
-   annotations {
-     depends-id = "${join(",", var.depends_on)}"
-   }
-   name = "${lookup(var.kubernetes, "namespace")}"
+    annotations {
+      depends-id = "${join(",", var.depends_on)}"
+    }
+
+    name = "${lookup(var.kubernetes, "namespace")}"
   }
 }
 
 resource "kubernetes_service_account" "spinnaker_account" {
   depends_on = [
-     "kubernetes_namespace.spinnaker_namespace",
+    "kubernetes_namespace.spinnaker_namespace",
   ]
+
   metadata {
-    name = "${lookup(var.kubernetes, "account_name")}"
+    name      = "${lookup(var.kubernetes, "account_name")}"
     namespace = "${lookup(var.kubernetes, "namespace")}"
   }
 }
 
 resource "kubernetes_cluster_role_binding" "client_role_binding" {
   depends_on = [
-     "kubernetes_service_account.spinnaker_account",
+    "kubernetes_service_account.spinnaker_account",
   ]
+
   metadata {
     name = "${lookup(var.kubernetes, "name")}"
   }
+
   role_ref {
-    name = "${lookup(var.kubernetes, "role_name")}"
-    kind = "${lookup(var.kubernetes, "role_kind")}"
+    name      = "${lookup(var.kubernetes, "role_name")}"
+    kind      = "${lookup(var.kubernetes, "role_kind")}"
     api_group = "${lookup(var.kubernetes, "role_api_group")}"
   }
+
   subject {
     kind = "User"
     name = "client"
   }
+
   subject {
-    name = "${lookup(var.kubernetes, "account_name")}"
+    name      = "${lookup(var.kubernetes, "account_name")}"
     namespace = "${lookup(var.kubernetes, "namespace")}"
-    kind = "${lookup(var.kubernetes, "subject_kind")}"
+    kind      = "${lookup(var.kubernetes, "subject_kind")}"
   }
 }
 
@@ -45,6 +51,7 @@ data "template_file" "kubectl_config" {
   depends_on = [
     "kubernetes_service_account.spinnaker_account",
   ]
+
   template = <<EOF
 set -ex \
 && CONTEXT=$(kubectl config current-context) \

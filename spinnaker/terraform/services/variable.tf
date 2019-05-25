@@ -33,7 +33,7 @@ variable "container" {
   default = {
     name         = "deploy-server"
     node_name    = "deploy-server-node"
-    node_count   = 1
+    node_count   = 2
     location     = "asia-northeast1"
     zone         = "asia-northeast1-a"
     machine_type = "n1-standard-2"
@@ -62,6 +62,15 @@ variable "gcs_location" {
 variable "spinnaker_version" {
   default = "1.8.5"
 }
+
+variable "deploy_account" {
+  default = "my-k8s-v2-account"
+}
+
+variable "docker_registry" {
+  default = "gcp-gcr"
+}
+
 provider "google" {
   credentials = "${file("config/account.json")}"
   project     = "${var.project}"
