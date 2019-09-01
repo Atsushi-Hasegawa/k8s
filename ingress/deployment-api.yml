@@ -1,0 +1,33 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: grpc-server
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: grpc-server
+    spec:
+      containers:
+        - name: grpc-server
+          image: sample_grpc:v1.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 50051
+              name: grpc-server
+          envFrom:
+            - secretRef:
+                name: secret-redis
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: grpc-server
+spec:
+  type: ClusterIP
+  ports:
+    - port: 50051
+      targetPort: 50051
+  selector:
+    app: grpc-server
